@@ -1,75 +1,26 @@
-import { useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
 import { Container, SubTitle, Title, Wrapper } from './App.styled';
-import ContactForm from './ContactForm/ContactForm';
-import ContactList from './ContactList/ContactList';
-import Filter from './Filter/Filter';
+import { ContactForm } from './ContactForm/ContactForm';
+import { ContactList } from './ContactList/ContactList';
+import { Filter } from './Filter/Filter';
+import { useSelector } from 'react-redux';
+import { selectContacts } from './redux/selectors';
 
 export const App = () => {
-  const [contacts, setContacts] = useState(
-    () => JSON.parse(localStorage.getItem('contacts')) ?? []
-  );
-
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
-  const addContact = contact => {
-    const isInContacts = contacts.find(
-      ({ name }) =>
-        name.toLowerCase().trim() === contact.name.toLowerCase().trim()
-    );
-
-    if (isInContacts) {
-      alert(`${contact.name} is already in contacts`);
-      return;
-    }
-    setContacts(prevContacts => [
-      { id: nanoid(), ...contact },
-      ...prevContacts,
-    ]);
-  };
-
-  const changeFilter = event => {
-    setFilter(event.target.value.trim());
-  };
-
-  const getVisibleContacts = () => {
-    const normalizedFilter = filter.toLowerCase();
-
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
-    );
-  };
-
-  const removeContact = contactId => {
-    setContacts(prevContacts =>
-      prevContacts.filter(({ id }) => id !== contactId)
-    );
-  };
-
-  const visibleContacts = getVisibleContacts();
+  const contacts = useSelector(selectContacts);
 
   return (
     <Container>
       <Title>Phonebook</Title>
 
-      <ContactForm onSubmit={addContact} />
+      <ContactForm />
 
       <SubTitle>Contacts</SubTitle>
       {contacts.length > 0 ? (
-        <Filter value={filter} onChangeFilter={changeFilter} />
+        <Filter />
       ) : (
         <Wrapper>Your phonebook is empty. Add first contact!</Wrapper>
       )}
-      {contacts.length > 0 && (
-        <ContactList
-          contacts={visibleContacts}
-          onRemoveContact={removeContact}
-        />
-      )}
+      {contacts.length > 0 && <ContactList />}
     </Container>
   );
 };

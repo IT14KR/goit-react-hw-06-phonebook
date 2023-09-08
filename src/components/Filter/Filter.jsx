@@ -1,21 +1,20 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Input, Label, Wrapp } from './Filter.styled';
+import { useDispatch } from 'react-redux';
+import { addFilter } from 'components/redux/filterSlice';
 
-function Filter({ value, onChangeFilter }) {
+export const Filter = () => {
+  const dispatch = useDispatch();
+  const changeFilter = event => {
+    dispatch(addFilter(event.target.value.trim()));
+  };
+
   return (
     <Wrapp>
       <Label>
         Find contacts by name
-        <Input type="text" value={value} onChange={onChangeFilter} />
+        <Input type="text" onChange={changeFilter} />
       </Label>
     </Wrapp>
   );
-}
-
-Filter.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChangeFilter: PropTypes.func.isRequired,
 };
-
-export default Filter;
